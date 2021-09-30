@@ -1,5 +1,5 @@
 let iframeDoc = null;
-
+// Just Converting all times to ms
 const DAY = 86400000;
 const HOUR = 3600000;
 const MIN = 60000;
@@ -94,26 +94,33 @@ function refresher(time) {
 		buildRefreshers();
 	});
 }
-
+// Start Here
 function runCCAssistant() {
-	let queues = iframeDoc.getElementsByClassName("desktop-module");
-	
-	// Using a foreach causes issues when destructuring the objects
-	for (let i = 0; i < queues.length; i++) {
-		let title = queues[i].getElementsByTagName("h4")[0].innerText;
-		let table = queues[i].children[1].children[0].children[0];
-		if (table) if (Object.keys(assistantQueues).includes(title)) assistantQueues[title](table.children[1]);
+	let queues = iframeDoc.getElementsByClassName("desktop-module"); 	// queues becomes an array containing the Elements from the Class name "desktop-module"
+											// desktop-module probably references each module on the TDX desktop
+									 		// iframeDoc referenced above in the beginning
+										// Using a foreach causes issues when destructuring the objects
+	for (let i = 0; i < queues.length; i++) 				// For loop running for the length of the array containing elements from class name
+	{ 
+		let title = queues[i].getElementsByTagName("h4")[0].innerText;  
+		let table = queues[i].children[1].children[0].children[0]; 	// Why 2 .children[0]? This whole line confuses me...
+		// Line Difference between Service Desk Code: if (table === undefined) continue;
+		// Unsure yet if necessary, but food for thought
+		if (table) if (Object.keys(assistantQueues).includes(title)) assistantQueues[title](table.children[1]); 
 	}
 }
 
 function runCCQueue(table) {
-	for (let i = 0; i < table.children.length; i++) {
-		let row = table.children[i];
+	for (let i = 0; i < table.children.length; i++) 	 // table references children to the queues variable, accessing each child variable's length 
+								 // Which means it accesses the TDX queue and runs it for the length of said queue
+	{
+		let row = table.children[i]; 
 		let status = row.children[4].innerText;
-		let timestampString = row.children[6].innerText;
-		let timeDif = unmodifiedSince(timestampString);
+		let timestampString = row.children[6].innerText; // Accessing the inner text of the ticket rather than the desktop
+		let timeDif = unmodifiedSince(timestampString);  // timeDif accesses time stamps of TDX assets
 		
-		if (status === "New") {
+		if (status === "New")				 // This entire if statement is assigning the various states to the elements
+		{						 // Service Desk Section is different than this, slightly cleaner, not sure if applicable though
 			row.classList.add("CCAssistant_New");
 			showNewTicketNotification();
 		} else if (timeDif > 4 * HOUR) {
@@ -160,7 +167,8 @@ function runITSCAssistant() {
 	let queues = iframeDoc.getElementsByClassName("desktop-module");
 	
 	// Using a foreach causes issues when destructuring the objects
-	for (let i = 0; i < queues.length; i++) {
+	for (let i = 0; i < queues.length; i++) 
+	{
 		let title = queues[i].getElementsByTagName("h4")[0].innerText;
 		let table = queues[i].children[1].children[0].children[0];
 		
@@ -187,7 +195,7 @@ function runITSCAssistant() {
 		}
 	}
 }
-
+// End Here
 function disableITSCAssistant() {
 	let ITSCAssistant = [".ITSCAssistant_Danger", ".ITSCAssistant_Warning", ".ITSCAssistant_New"];
 	
